@@ -37,6 +37,11 @@ public:
 private:
 	char** board_;
 	
+	int hit_color_     { 0x04 | FOREGROUND_INTENSITY };
+	int miss_color_    { 0x09 | FOREGROUND_INTENSITY };
+	int ship_color_    { 0x0a | FOREGROUND_INTENSITY };
+	int text_color_    { 0x0f };
+
 	const int  ROWS                { 10 };
 	const int  COLS                { 10 };
 	const int  NUM_SHIPS           { 5 };
@@ -48,11 +53,11 @@ private:
 	static const char HIT_SYM           { 'X' };
 	static const char MISS_SYM          { 'O' };
 
-	static const char FRIGATE_SYM       { 'F' };
-	static const char BATTLESHIP_SYM    { 'B' };
-	static const char DESTROYER_SYM     { 'D' };
-	static const char SUBMARINE_SYM     { 'S' };
-	static const char CARRIER_SYM       { 'C' };
+	static const char FRIGATE_SYM    { 'F' };
+	static const char BATTLESHIP_SYM { 'B' };
+	static const char DESTROYER_SYM  { 'D' };
+	static const char SUBMARINE_SYM  { 'S' };
+	static const char CARRIER_SYM    { 'C' };
 
 	static const int FRIGATE_LEN    { 2 };
 	static const int BATTLESHIP_LEN { 4 };
@@ -84,7 +89,7 @@ private:
 	bool dev_mode_  { false };
 	bool music_on_  { false };
 	bool sound_fx_  { false };
-	bool dark_mode_ { false };
+	bool dark_mode_ { true };
 
 	int  ships_sunk_         { };
 	int  consecutive_misses_ { };
@@ -94,5 +99,6 @@ private:
 	void      PlaceShip(Ship, Position*);
     void      SetupShip(Ship);
 	void      ToggleDevMode(void);
+	void      ToggleColorScheme(void);
 };
 

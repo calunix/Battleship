@@ -221,9 +221,7 @@ void Battleship::DrawBoard()
 	if (!dev_mode_) system("cls");
 
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole,
-		FOREGROUND_INTENSITY | FOREGROUND_RED | 
-		FOREGROUND_GREEN | FOREGROUND_BLUE);
+	SetConsoleTextAttribute(hConsole, text_color_);
 	
 	std::cout << R"(
                                      |__
@@ -265,20 +263,20 @@ void Battleship::DrawBoard()
 		for (int j{ }; j < COLS; j++)
 		{
 			if (board_[i][j] == HIT_SYM) {
-				SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
+				SetConsoleTextAttribute(hConsole, hit_color_);
 				std::cout << " " << board_[i][j] << " ";
-				SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+				SetConsoleTextAttribute(hConsole, text_color_);
 			}
 			else if (board_[i][j] == MISS_SYM) {
-				SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				SetConsoleTextAttribute(hConsole, miss_color_);
 				std::cout << " " << board_[i][j] << " ";
-				SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+				SetConsoleTextAttribute(hConsole, text_color_);
 			}
 			else if (board_[i][j] != DEFAULT_GRID_CHAR && dev_mode_) {
 			//else if (board_[i][j] != DEFAULT_GRID_CHAR) {
-				SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				SetConsoleTextAttribute(hConsole, ship_color_);
 				std::cout << " " << board_[i][j] << " ";
-				SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+				SetConsoleTextAttribute(hConsole, text_color_);
 			}
 			else {
 				std::cout << " " << DEFAULT_GRID_CHAR << " ";
@@ -346,6 +344,9 @@ void Battleship::ProcessCommandOption(string option)
 	else if (option == "n") {
 		ResetGame();
 	}
+	else if (option == "l") {
+		ToggleColorScheme();
+	}
 }
 
 void Battleship::ToggleDevMode(void)
@@ -358,4 +359,28 @@ void Battleship::ToggleDevMode(void)
 	}
 	dev_mode_ = !dev_mode_;
 	this_thread::sleep_for(chrono::seconds(2));
+}
+
+void Battleship::ToggleColorScheme(void)
+{
+	dark_mode_ = !dark_mode_;
+	// right most hex digit represents foreground color
+	// left most hex digit represents background color
+	// 0 - black, 4 - red, 9 - blue, a - green, f - white
+	if (dark_mode_) {
+		cout << "\nSWITCHING TO DARK MODE!";
+		text_color_ = 0x0f;
+		hit_color_ = 0x04 | FOREGROUND_INTENSITY;
+		miss_color_ = 0x09 | FOREGROUND_INTENSITY;
+		ship_color_ = 0x0a | FOREGROUND_INTENSITY;
+	}
+	else {
+		cout << "\nSWITCHING TO LIGHT MODE!";
+		text_color_ = 0xf0;
+		hit_color_ = 0xf4 | FOREGROUND_INTENSITY;
+		miss_color_ = 0xf9 | FOREGROUND_INTENSITY;
+		ship_color_ = 0xfa | FOREGROUND_INTENSITY;
+	}
+	this_thread::sleep_for(chrono::seconds(2));
+	DrawBoard(); // redraw required to clear previous background color
 }
