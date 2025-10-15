@@ -43,25 +43,34 @@ void Battleship::ResetGame(void)
 
 void Battleship::TakeShot(GridLocation gl)
 {
+	if (sound_fx_) {
+		PlaySound(TEXT("audio/launch.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		this_thread::sleep_for(chrono::seconds(2));
+	}
+
 	char grid_occupant{ board_[gl.row][gl.column] };
 	if (grid_occupant == DEFAULT_GRID_CHAR) {
 		board_[gl.row][gl.column] = MISS_SYM;
 		consecutive_misses_ += 1;
+		if (sound_fx_) PlaySound(TEXT("audio/miss.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		cout << "MISS!\n";
-		this_thread::sleep_for(chrono::seconds(1));
+		this_thread::sleep_for(chrono::seconds(2));
 	}
 	else if (grid_occupant == MISS_SYM) {
 		consecutive_misses_ += 1;
+		if (sound_fx_) PlaySound(TEXT("audio/miss.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		cout << "MISS! Don't waste your missiles!\n";
-		this_thread::sleep_for(chrono::seconds(1));
+		this_thread::sleep_for(chrono::seconds(2));
 	}
 	else if (grid_occupant == HIT_SYM) {
 		consecutive_misses_ += 1;
+		if (sound_fx_) PlaySound(TEXT("audio/miss.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		cout << "You've already hit this coordinate! Don't waste your missiles!\n";
-		this_thread::sleep_for(chrono::seconds(1));
+		this_thread::sleep_for(chrono::seconds(2));
 	}
 	else if (grid_occupant != DEFAULT_GRID_CHAR) {
 		cout << "HIT!\n";
+		if (sound_fx_) PlaySound(TEXT("audio/hit.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		string ship_type = ship_map_[grid_occupant];
 		//cout << "You hit the enemy " << ship_type << "\n";
 		fleet_[ship_type]->Strike();
@@ -73,7 +82,7 @@ void Battleship::TakeShot(GridLocation gl)
 		board_[gl.row][gl.column] = HIT_SYM;
 		consecutive_misses_ = 0;
 		
-		this_thread::sleep_for(chrono::seconds(1));
+		this_thread::sleep_for(chrono::seconds(2));
 	}
 }
 
@@ -273,7 +282,6 @@ void Battleship::DrawBoard()
 				SetConsoleTextAttribute(hConsole, text_color_);
 			}
 			else if (board_[i][j] != DEFAULT_GRID_CHAR && dev_mode_) {
-			//else if (board_[i][j] != DEFAULT_GRID_CHAR) {
 				SetConsoleTextAttribute(hConsole, ship_color_);
 				std::cout << " " << board_[i][j] << " ";
 				SetConsoleTextAttribute(hConsole, text_color_);
@@ -301,22 +309,25 @@ void Battleship::DrawBoard()
 		else if (i == 5) {
 			cout << "     D - toggle development mode";
 		}
+		//else if (i == 6) {
+		//	cout << "     M - toggle music on/off";
+		//}
 		else if (i == 6) {
-			cout << "     M - toggle music on/off";
-		}
-		else if (i == 7) {
 			cout << "     S - toggle sound effects on/off";
+		}
+		else if (i == 8) {
+			cout << "     Misses: " << consecutive_misses_;
 		}
 
 		cout << "\n";
 	}
 	string settings{ };
-	if (dev_mode_) settings += "    Dev Mode: ON  |";
-	else settings += "    Dev Mode: OFF  |";
+	if (dev_mode_) settings += "           Dev Mode: ON  |";
+	else settings += "           Dev Mode: OFF  |";
 	if (dark_mode_) settings += "  Dark Mode: ON  |";
 	else settings += "  Dark Mode: OFF  |";
-	if (music_on_) settings += "  Music: ON  |";
-	else settings += "  Music: OFF  |";
+	//if (music_on_) settings += "  Music: ON  |";
+	//else settings += "  Music: OFF  |";
 	if (sound_fx_) settings += "  Sound Effects: ON";
 	else settings += "  Sound Effects: OFF";
 
@@ -347,6 +358,12 @@ void Battleship::ProcessCommandOption(string option)
 	else if (option == "l") {
 		ToggleColorScheme();
 	}
+	else if (option == "s") {
+		ToggleSoundFx();
+	}
+	//else if (option == "m") {
+	//	ToggleMusic();
+	//}
 }
 
 void Battleship::ToggleDevMode(void)
@@ -383,4 +400,30 @@ void Battleship::ToggleColorScheme(void)
 	}
 	this_thread::sleep_for(chrono::seconds(2));
 	DrawBoard(); // redraw required to clear previous background color
+}
+
+void Battleship::ToggleSoundFx(void)
+{
+	if (!sound_fx_) {
+		cout << "\nSOUND EFFECTS ON\n";
+	}
+	else {
+		cout << "\nSOUND EFFECTS OFF\n";
+	}
+	sound_fx_ = !sound_fx_;
+	this_thread::sleep_for(chrono::seconds(2));
+}
+
+void Battleship::ToggleMusic(void)
+{
+	music_on_ = !music_on_;
+	if (!music_on_) {
+		cout << "\nMUSIC ON\n";
+		PlaySound(TEXT("audio/game_loop.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+	}
+	else {
+		cout << "\nMUSIC OFF\n";
+		PlaySound(NULL, NULL, 0);
+	}
+	this_thread::sleep_for(chrono::seconds(2));
 }
