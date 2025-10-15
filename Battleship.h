@@ -87,8 +87,8 @@ private:
 	};
 
 	bool dev_mode_  { false };
-	bool music_on_  { false };
-	bool sound_fx_  { false };
+	bool music_on_  { true };
+	bool sound_fx_  { true };
 	bool dark_mode_ { true };
 
 	int  ships_sunk_         { };
@@ -100,5 +100,7 @@ private:
     void      SetupShip(Ship);
 	void      ToggleDevMode(void);
 	void      ToggleColorScheme(void);
+	void      ToggleSoundFx(void);
+	void      ToggleMusic(void);
 };
 

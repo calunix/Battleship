@@ -11,25 +11,10 @@
 using namespace std;
 
 int main(void)
-{
-	// set console size
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD newBufferSize = { 100, 100 }; // Example: 120 columns, 40 rows
-	SMALL_RECT windowRect = { 0, 0, newBufferSize.X - 1, newBufferSize.Y - 1 };
-	SetConsoleScreenBufferSize(hConsole, newBufferSize);
-	SetConsoleWindowInfo(hConsole, TRUE, &windowRect);
-
-	//HWND consoleWindow = GetConsoleWindow();
-	//if (consoleWindow != NULL) {
-	//	// Example: Move to (100, 100) and resize to 800x600 pixels
-	//	SetWindowPos(consoleWindow, NULL, 100, 100, 800, 600, SWP_NOZORDER | SWP_SHOWWINDOW);
-	//}
-	
+{	
 	Battleship battleship{ };
 	string user_input{ };
 	GridLocation next_shot{ };
-
-	battleship.DrawBoard();
 
 	auto PrintErrorMessage = []() {
 		cout << "Invalid input...\n";
@@ -43,6 +28,9 @@ int main(void)
 			[](unsigned char c) { return tolower(c); });
 		return output;
 	};
+
+	battleship.DrawBoard();
+	//PlaySound(TEXT("audio/game_loop.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
 	PrintUserPrompt();
 	while (getline(cin, user_input))
