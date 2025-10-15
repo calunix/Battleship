@@ -337,7 +337,23 @@ void Battleship::DrawBoard()
 	cout << settings << "\n";
 	cout << "==============================================================================\n";
 
-	string ship_states{ " Carrier: X  |  Battleship: X  |  Frigate: X  |  Submarine:   |  Destroyer: X"};
+	//string ship_states{ " Carrier: X  |  Battleship: X  |  Frigate: X  |  Submarine:   |  Destroyer: X"};
+	string ship_states{ };
+	ship_states += "Carrier: ";
+	if (fleet_[CARRIER_STR]->Sunk()) ship_states += "X  |";
+	else ship_states += "   |";
+	ship_states += "  Battleship: ";
+	if (fleet_[BATTLESHIP_STR]->Sunk()) ship_states += "X  |";
+	else ship_states += "   |";
+	ship_states += "  Frigate: ";
+	if (fleet_[FRIGATE_STR]->Sunk()) ship_states += "X  |";
+	else ship_states += "   |";
+	ship_states += "  Submarine: ";
+	if (fleet_[SUBMARINE_STR]->Sunk()) ship_states += "X  |";
+	else ship_states += "   |";
+	ship_states += "  Destroyer: ";
+	if (fleet_[DESTROYER_STR]->Sunk()) ship_states += "X";
+
 	cout << ship_states << "\n";
 	cout << "==============================================================================\n";
 
