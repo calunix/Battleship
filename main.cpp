@@ -60,6 +60,7 @@ int main(void)
 					break;
 				}
 				else if (user_input == "n" || user_input == "no") {
+					battleship.PrintCredits();
 					return 0;
 				}
 				cout << "Play again? (y/n): ";
@@ -69,6 +70,7 @@ int main(void)
 		battleship.DrawBoard();
 		PrintUserPrompt();
 	}
-	
+
+	battleship.PrintCredits();
 	return 0;
 }
