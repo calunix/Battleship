@@ -29,6 +29,7 @@ public:
 	bool ValidateUserInput(string);
 	void ProcessCommandOption(string);
 	void ResetGame(void);
+	void PrintCredits(void);
 
 	static GridLocation ParseGridLocation(string);
 
@@ -47,6 +48,7 @@ private:
 	static const int ASCII_LOWER_A { 97 };
 	const string QUIT_SENTINEL     { "q" };
 
+	static const int  DISPLAY_WIDTH      { 80 };
 	static const char DEFAULT_GRID_CHAR { '*' };
 	static const char HIT_SYM           { 'X' };
 	static const char MISS_SYM          { 'O' };
@@ -99,5 +101,6 @@ private:
 	void      ToggleDevMode(void);
 	void      ToggleColorScheme(void);
 	void      ToggleSoundFx(void);
+	void      PrintCenteredString(string);
 };
 

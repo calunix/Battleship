@@ -138,10 +138,12 @@ bool Battleship::ValidateUserInput(string input)
 bool Battleship::GameOver(void)
 {
 	if (ships_sunk_ == NUM_SHIPS) {
+		DrawBoard();
 		cout << "GAME OVER! All enemy ships destroyed! YOU WIN!\n";
 		return true;
 	}
 	if (consecutive_misses_ == MAX_CONSEC_MISSES) {
+		DrawBoard();
 		cout << "GAME OVER! The enemy has discovered your position and targeted your ship! You have lost the battle!\n";
 		return true;
 	}
@@ -229,40 +231,41 @@ void Battleship::DrawBoard()
 	SetConsoleTextAttribute(hConsole, text_color_);
 	
 	std::cout << R"(
-                                     |__
-                                     |\/
-                                     ---
-                                     / | [
-                              !      | |||
-                            _/|     _/|-++'
-                        +  +--|    |--|--|_ |-
-                     { /|__|  |/\__|  |--- |||__/
-                    +---------------___[}-_===_.'____                 /\
-                ____`-' ||___-{]_| _[}-  |     |_[___\==--            \/   _
- __..._____--==/___]_|__|_____________________________[___\==--____,------' .7
-|                                                                     BB-61/
- \_________________________________________________________________________|
+                                      |__
+                                      |\/
+                                      ---
+                                      / | [
+                               !      | |||
+                             _/|     _/|-++'
+                         +  +--|    |--|--|_ |-
+                      { /|__|  |/\__|  |--- |||__/
+                     +---------------___[}-_===_.'____                 /\
+                 ____`-' ||___-{]_| _[}-  |     |_[___\==--            \/   _
+  __..._____--==/___]_|__|_____________________________[___\==--____,------' .7
+ |                                                                     BB-61/
+  \_________________________________________________________________________|
 
-             ____  ___  ______________    ___________ __  __________ 
-            / __ )/   |/_  __/_  __/ /   / ____/ ___// / / /  _/ __ \
-           / __  / /| | / /   / / / /   / __/  \__ \/ /_/ // // /_/ /
-          / /_/ / ___ |/ /   / / / /___/ /___ ___/ / __  // // ____/ 
-         /_____/_/  |_/_/   /_/ /_____/_____//____/_/ /_/___/_/      
+              ____  ___  ______________    ___________ __  __________ 
+             / __ )/   |/_  __/_  __/ /   / ____/ ___// / / /  _/ __ \
+            / __  / /| | / /   / / / /   / __/  \__ \/ /_/ // // /_/ /
+           / /_/ / ___ |/ /   / / / /___/ /___ ___/ / __  // // ____/ 
+          /_____/_/  |_/_/   /_/ /_____/_____//____/_/ /_/___/_/      
     )" << "\n";
 	
-	int leftPadding{ 8 };
+	int left_padding{ 8 };
+	cout << setfill(' ');
 	
-	std::cout << std::setw(leftPadding + 2);
+	std::cout << std::setw(left_padding + 2);
 	for (int i{ 1 }; i <= COLS; i++) std::cout << " " << i << " ";
 	std::cout << '\n';
-	std::cout << std::setw(leftPadding + 2);
+	std::cout << std::setw(left_padding + 2);
 	for (int i{ 0 }; i < COLS * 3; i++) std::cout << "-";
 	std::cout << '\n';
 	
 	char rowLabel{ 'A' };
 	for (int i{ }; i < ROWS; i++)
 	{
-		std::cout << std::setw(leftPadding - 1) << rowLabel << " |";
+		std::cout << std::setw(left_padding - 1) << rowLabel << " |";
 		rowLabel++;
 
 		for (int j{ }; j < COLS; j++)
@@ -288,7 +291,7 @@ void Battleship::DrawBoard()
 		}
 
 		if (i == 0) {
-			cout << setw(leftPadding) << "     Control Options:";
+			cout << setw(left_padding) << "     Control Options:";
 		}
 		else if (i == 1) {
 			cout << "     ================";
@@ -317,8 +320,8 @@ void Battleship::DrawBoard()
 
 	string settings{ };
 
-	if (dev_mode_) settings += "           Dev Mode: ON  |";
-	else settings += "           Dev Mode: OFF  |";
+	if (dev_mode_) settings += "            Dev Mode: ON  |";
+	else settings += "            Dev Mode: OFF  |";
 
 	if (dark_mode_) settings += "  Dark Mode: ON  |";
 	else settings += "  Dark Mode: OFF  |";
@@ -327,13 +330,13 @@ void Battleship::DrawBoard()
 	else settings += "  Sound Effects: OFF";
 
 	cout << "\n";
-	cout << "==============================================================================\n";
+	cout << setw(DISPLAY_WIDTH) << setfill('=') << "\n";
 	cout << settings << "\n";
-	cout << "==============================================================================\n";
+	cout << setw(DISPLAY_WIDTH) << setfill('=') << "\n";
 
 	string ship_states{ };
 
-	ship_states += "Carrier: ";
+	ship_states += " Carrier: ";
 	if (fleet_[CARRIER_STR]->Sunk()) ship_states += "X  |";
 	else ship_states += "   |";
 
@@ -353,7 +356,7 @@ void Battleship::DrawBoard()
 	if (fleet_[DESTROYER_STR]->Sunk()) ship_states += "X";
 
 	cout << ship_states << "\n";
-	cout << "==============================================================================\n";
+	cout << setw(DISPLAY_WIDTH) << setfill('=') << "\n";
 
 	cout << endl;
 }
@@ -361,6 +364,7 @@ void Battleship::DrawBoard()
 void Battleship::ProcessCommandOption(string option)
 {
 	if (option == QUIT_SENTINEL) {
+		PrintCredits();
 		exit(0);
 	}
 	else if (option == "d") {
@@ -423,4 +427,26 @@ void Battleship::ToggleSoundFx(void)
 	}
 	sound_fx_ = !sound_fx_;
 	this_thread::sleep_for(chrono::seconds(2));
+}
+
+void Battleship::PrintCredits(void)
+{
+	cout << "\n\n";
+	PrintCenteredString("CREDITS");
+	PrintCenteredString("=======");
+	cout << "\n";
+	PrintCenteredString("USS Iowa BB-61 ASCII Art");
+	PrintCenteredString("https://asciiart.website/art/4378");
+	cout << "\n";
+	PrintCenteredString("\"Battleship\" ASCII Art");
+	PrintCenteredString("https://patorjk.com/software/taag/");
+	cout << "\n\n";
+}
+
+void Battleship::PrintCenteredString(string str)
+{
+	size_t length{ str.length() };
+	size_t total_padding{ DISPLAY_WIDTH - length };
+	size_t left_padding{ total_padding / 2 };
+	cout << setfill(' ') << setw(left_padding + length) << str << "\n";
 }
