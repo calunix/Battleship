@@ -32,8 +32,6 @@ public:
 
 	static GridLocation ParseGridLocation(string);
 
-	friend class Fleet;
-
 private:
 	char** board_;
 	
@@ -94,13 +92,12 @@ private:
 	int  ships_sunk_         { };
 	int  consecutive_misses_ { };
 
-	Position* generatePosition(int);
-	bool      validatePosition(Position*, int);
+	Position* GeneratePosition(int);
+	bool      ValidatePosition(Position*, int);
 	void      PlaceShip(Ship, Position*);
     void      SetupShip(Ship);
 	void      ToggleDevMode(void);
 	void      ToggleColorScheme(void);
 	void      ToggleSoundFx(void);
-	void      ToggleMusic(void);
 };
 

@@ -72,7 +72,6 @@ void Battleship::TakeShot(GridLocation gl)
 		cout << "HIT!\n";
 		if (sound_fx_) PlaySound(TEXT("audio/hit.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		string ship_type = ship_map_[grid_occupant];
-		//cout << "You hit the enemy " << ship_type << "\n";
 		fleet_[ship_type]->Strike();
 		if (fleet_[ship_type]->Sunk()) {
 			cout << "You sank the enemy " << ship_type << "!\n\n";
@@ -111,7 +110,6 @@ bool Battleship::ValidateUserInput(string input)
 			input == "q" ||
 			input == "l" ||
 			input == "d" ||
-			input == "m" ||
 			input == "s" ) {
 			return true;
 		}
@@ -137,7 +135,7 @@ bool Battleship::ValidateUserInput(string input)
 	}
 }
 
-bool Battleship::GameOver()
+bool Battleship::GameOver(void)
 {
 	if (ships_sunk_ == NUM_SHIPS) {
 		cout << "GAME OVER! All enemy ships destroyed! YOU WIN!\n";
@@ -155,8 +153,8 @@ void Battleship::SetupShip(Ship ship)
 	bool valid_position{ false };
 	while (!valid_position)
 	{
-		Position* ship_position{ generatePosition(ship.Length()) };
-		valid_position = validatePosition(ship_position, ship.Length());
+		Position* ship_position{ GeneratePosition(ship.Length()) };
+		valid_position = ValidatePosition(ship_position, ship.Length());
 		if (!valid_position) delete ship_position;
 		else PlaceShip(ship, ship_position);
 	}
@@ -176,7 +174,7 @@ void Battleship::PlaceShip(Ship ship, Position* pos)
 	}
 }
 
-bool Battleship::validatePosition(Position* pos, int ship_length)
+bool Battleship::ValidatePosition(Position* pos, int ship_length)
 {
 	if (!pos->orientation) { // vertical
 		if (pos->row + ship_length > ROWS) return false;
@@ -193,7 +191,7 @@ bool Battleship::validatePosition(Position* pos, int ship_length)
 	return true;
 }
 
-Position* Battleship::generatePosition(int ship_length)
+Position* Battleship::GeneratePosition(int ship_length)
 {
 	Position* p = new Position;
 	std::random_device rdev;
@@ -206,10 +204,8 @@ Position* Battleship::generatePosition(int ship_length)
 	int row_pos{ };
 	int col_pos{ };
 	if (p->orientation == 0) { // vertical
-		std::uniform_int_distribution<>
-			rows_distribution(0, ROWS - ship_length + 1);
-		std::uniform_int_distribution<>
-			cols_distribution(0, COLS - 1);
+		std::uniform_int_distribution<> rows_distribution(0, ROWS - ship_length + 1);
+		std::uniform_int_distribution<> cols_distribution(0, COLS - 1);
 		row_pos = rows_distribution(gen);
 		col_pos = cols_distribution(gen);
 	}
@@ -309,9 +305,6 @@ void Battleship::DrawBoard()
 		else if (i == 5) {
 			cout << "     D - toggle development mode";
 		}
-		//else if (i == 6) {
-		//	cout << "     M - toggle music on/off";
-		//}
 		else if (i == 6) {
 			cout << "     S - toggle sound effects on/off";
 		}
@@ -321,36 +314,41 @@ void Battleship::DrawBoard()
 
 		cout << "\n";
 	}
+
 	string settings{ };
+
 	if (dev_mode_) settings += "           Dev Mode: ON  |";
 	else settings += "           Dev Mode: OFF  |";
+
 	if (dark_mode_) settings += "  Dark Mode: ON  |";
 	else settings += "  Dark Mode: OFF  |";
-	//if (music_on_) settings += "  Music: ON  |";
-	//else settings += "  Music: OFF  |";
+
 	if (sound_fx_) settings += "  Sound Effects: ON";
 	else settings += "  Sound Effects: OFF";
 
-	// I can probably better program this with setw and centering from iomanip
 	cout << "\n";
 	cout << "==============================================================================\n";
 	cout << settings << "\n";
 	cout << "==============================================================================\n";
 
-	//string ship_states{ " Carrier: X  |  Battleship: X  |  Frigate: X  |  Submarine:   |  Destroyer: X"};
 	string ship_states{ };
+
 	ship_states += "Carrier: ";
 	if (fleet_[CARRIER_STR]->Sunk()) ship_states += "X  |";
 	else ship_states += "   |";
+
 	ship_states += "  Battleship: ";
 	if (fleet_[BATTLESHIP_STR]->Sunk()) ship_states += "X  |";
 	else ship_states += "   |";
+
 	ship_states += "  Frigate: ";
 	if (fleet_[FRIGATE_STR]->Sunk()) ship_states += "X  |";
 	else ship_states += "   |";
+
 	ship_states += "  Submarine: ";
 	if (fleet_[SUBMARINE_STR]->Sunk()) ship_states += "X  |";
 	else ship_states += "   |";
+
 	ship_states += "  Destroyer: ";
 	if (fleet_[DESTROYER_STR]->Sunk()) ship_states += "X";
 
@@ -377,9 +375,6 @@ void Battleship::ProcessCommandOption(string option)
 	else if (option == "s") {
 		ToggleSoundFx();
 	}
-	//else if (option == "m") {
-	//	ToggleMusic();
-	//}
 }
 
 void Battleship::ToggleDevMode(void)
@@ -427,19 +422,5 @@ void Battleship::ToggleSoundFx(void)
 		cout << "\nSOUND EFFECTS OFF\n";
 	}
 	sound_fx_ = !sound_fx_;
-	this_thread::sleep_for(chrono::seconds(2));
-}
-
-void Battleship::ToggleMusic(void)
-{
-	music_on_ = !music_on_;
-	if (!music_on_) {
-		cout << "\nMUSIC ON\n";
-		PlaySound(TEXT("audio/game_loop.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-	}
-	else {
-		cout << "\nMUSIC OFF\n";
-		PlaySound(NULL, NULL, 0);
-	}
 	this_thread::sleep_for(chrono::seconds(2));
 }
