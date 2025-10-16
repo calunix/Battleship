@@ -87,7 +87,6 @@ private:
 	};
 
 	bool dev_mode_  { false };
-	bool music_on_  { true };
 	bool sound_fx_  { true };
 	bool dark_mode_ { true };
 
