@@ -30,7 +30,6 @@ int main(void)
 	};
 
 	battleship.DrawBoard();
-	//PlaySound(TEXT("audio/game_loop.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
 	PrintUserPrompt();
 	while (getline(cin, user_input))
